@@ -1,4 +1,4 @@
-# hello_world
+# qr_scanner
 
 A new Flutter project.
 
