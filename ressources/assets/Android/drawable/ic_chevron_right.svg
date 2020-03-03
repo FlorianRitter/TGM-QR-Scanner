@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.1 (72631) - https://sketchapp.com -->
+    <title>Android/assets/icons/ic_chevron_right</title>
+    <desc>Created with Sketch.</desc>
+    <g id="assets/icons/ic_chevron_right" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <polygon id="Bounds" points="0 0 24 0 24 24 0 24"></polygon>
+        <polygon id="Back-Arrow" fill="#E30513" points="12.9927582 12.0000237 9 8.00435106 10.0036114 7 14.4981896 11.4978292 15 12.0000237 14.4981896 12.5021708 10.0036114 17 9 15.9956584"></polygon>
+    </g>
+</svg>
