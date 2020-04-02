@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(MaterialApp(home: MyApp()));
 
@@ -16,6 +17,23 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    //Vorgefertigte Abfrage vom Status der Camera-Permission
+    Future status = PermissionHandler().checkPermissionStatus(PermissionGroup.camera);
+    //Vorgefertigte Anforderung von der Camera-Permission
+    Future<Map<PermissionGroup, PermissionStatus>> request = PermissionHandler().requestPermissions([PermissionGroup.camera]);
+    //Ausführung der vorgefertigten Methoden
+    status.then((status) {
+      //Wenn die Anforderung nicht bereits angenommen wurde:
+      if(status != PermissionStatus.granted){
+        //: Soll die Anforderung gestellt werden
+        request.then((request){
+          //Wenn die Antwort des Benutzers "nicht zulassen" ist:
+          if(request[PermissionGroup.camera] != PermissionStatus.granted){
+            //TODO: Soll die "fehlende Permission"-Seite angezeigt werden
+          }
+        });
+      }
+    });
     return Scaffold(
       body: Column(
         children: <Widget>[
