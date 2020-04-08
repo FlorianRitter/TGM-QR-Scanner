@@ -30,6 +30,14 @@ class _MyAppState extends State<MyApp> {
           //Wenn die Antwort des Benutzers "nicht zulassen" ist:
           if(request[PermissionGroup.camera] != PermissionStatus.granted){
             //TODO: Soll die "fehlende Permission"-Seite angezeigt werden
+           Text(
+             'Fehlende Kameraerlaubnis',
+             style: TextStyle(fontSize: 32, color: Color.fromRGBO(66, 66, 66, 0.8)),
+           );
+           Text(
+             'Erlaube QR-Scanner auf deine Kamera zuzugreifen. Du kannst diese Berechtigung unter Eistellung ändern.',
+             style: TextStyle(fontSize: 12, color: Color.fromRGBO(117, 117, 117, 0.6)),
+           );
           }
         });
       }
