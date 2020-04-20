@@ -37,8 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
       //TODO: Show camera
     }
     else{
-      message = "Camera not working!";  
-      //TODO: show no camera permission granted screen
+    
+       message= "Fehlende Kameraerlaubnis\nErlaube QR-Scanner auf deine Kamera zuzugreifen. Du kannst diese Berechtigung unter Eistellung ändern.";
+        
+     
     }
     setState(() {
       status = message;
