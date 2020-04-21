@@ -75,8 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
       message = "Camera working!";
       //TODO: Show camera
     } else {
-      message = "Camera not working!";
-      //TODO: show no camera permission granted screen
+        Text txt1 = Text(
+             'Fehlende Kameraerlaubnis',
+             style: TextStyle(fontSize: 32, color: Color.fromRGBO(66, 66, 66, 0.8)),
+           );
+        Text txt2 = Text(
+             'Erlaube QR-Scanner auf deine Kamera zuzugreifen. Du kannst diese Berechtigung unter Eistellung ändern.',
+             style: TextStyle(fontSize: 12, color: Color.fromRGBO(117, 117, 117, 0.6)),
+           );
+        message = txt1.data + txt2.data;
+
     }
     setState(() {
       status = message;
