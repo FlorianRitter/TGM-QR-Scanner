@@ -18,25 +18,67 @@ class YTRoute extends StatefulWidget {
 
 class YTRouteState extends State<YTRoute>{
 
-  YoutubePlayerController player;
-  YoutubePlayer view;
+  //final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  YoutubePlayerController controller;
+  YoutubeMetaData metaData;
+  bool isPlayerReady = false;
 
-  void loadPlayer(BuildContext context){
-    player = new YoutubePlayerController(initialVideoId: YoutubePlayer.convertUrlToId(widget.link));
-    player.fitHeight(MediaQuery.of(context).size);
-    view = YoutubePlayer(controller: player, progressColors: ProgressBarColors(playedColor: Colors.red, handleColor: Colors.redAccent));
+  @override
+  void initState() {
+    super.initState();
+    controller = YoutubePlayerController(
+      initialVideoId: widget.link,
+      flags: YoutubePlayerFlags(
+        mute: false,
+        autoPlay: true,
+        disableDragSeek: true,
+        loop: false,
+        isLive: false,
+        forceHideAnnotation: true,
+        forceHD: false,
+        enableCaption: false,
+        controlsVisibleAtStart: true,
+        hideThumbnail: true,
+        hideControls: false,
+        captionLanguage: "de"
+      )
+    );
+  }
+
+  @override
+  void deactivate() {
+    controller.pause();
+    super.deactivate();
+  }
+
+  @override
+  void dispose(){
+    controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    loadPlayer(context);
     return Scaffold(
       body: Column(
         children: <Widget>[
-        Expanded(
-          child: view
-        ),
-      ])
+          Expanded (child:
+            YoutubePlayer (
+              //key: scaffoldKey,
+              controller: controller,
+              showVideoProgressIndicator: true,
+              aspectRatio: 16 / 9,
+              progressIndicatorColor: Colors.red,
+              onReady: () => {
+                  isPlayerReady = true 
+              },
+              onEnded: (data) => {
+                  Navigator.pop(context)
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -92,11 +134,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void openYoutube(String l) {
-    MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: l));
+    MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(l)));
     if(!route.isCurrent) {
       Navigator.push(context, route);
-      controller.pauseCamera();
     }
+  }
+
+  @override
+  void deactivate() {
+    controller.pauseCamera();
+    super.deactivate();
   }
 
   @override

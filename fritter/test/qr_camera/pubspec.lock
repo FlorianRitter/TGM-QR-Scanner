@@ -151,6 +151,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  share:
+    dependency: transitive
+    description:
+      name: share
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -223,6 +230,13 @@ packages:
     dependency: transitive
     description:
       name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.5.0"
+  youtube_player:
+    dependency: "direct main"
+    description:
+      name: youtube_player
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.5.0"
