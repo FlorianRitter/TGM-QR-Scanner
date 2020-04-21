@@ -18,10 +18,9 @@ class YTRoute extends StatefulWidget {
 
 class YTRouteState extends State<YTRoute>{
 
-  //final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey(debugLabel: "yt");
   YoutubePlayerController controller;
   YoutubeMetaData metaData;
-  bool isPlayerReady = false;
 
   @override
   void initState() {
@@ -34,47 +33,26 @@ class YTRouteState extends State<YTRoute>{
         disableDragSeek: true,
         loop: false,
         isLive: false,
-        forceHideAnnotation: true,
-        forceHD: false,
         enableCaption: false,
         controlsVisibleAtStart: true,
         hideThumbnail: true,
         hideControls: false,
-        captionLanguage: "de"
       )
     );
   }
 
   @override
-  void deactivate() {
-    controller.pause();
-    super.deactivate();
-  }
-
-  @override
-  void dispose(){
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       body: Column(
         children: <Widget>[
           Expanded (child:
             YoutubePlayer (
-              //key: scaffoldKey,
               controller: controller,
               showVideoProgressIndicator: true,
               aspectRatio: 16 / 9,
               progressIndicatorColor: Colors.red,
-              onReady: () => {
-                  isPlayerReady = true 
-              },
-              onEnded: (data) => {
-                  Navigator.pop(context)
-              },
             ),
           ),
         ],
@@ -105,11 +83,12 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   var qrText = "";
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String status = "Press the button to determine the permission-Status";
+  bool isPlayerReady = false;
 
   void askForPermission() async {
     String message = "";
@@ -134,16 +113,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void openYoutube(String l) {
-    MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(l)));
-    if(!route.isCurrent) {
-      Navigator.push(context, route);
+    if(!isPlayerReady){
+      if(YoutubePlayer.convertUrlToId(l) != null){
+        MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(l)));
+        if(!route.isCurrent) {
+          controller.pauseCamera();
+          isPlayerReady = true;
+          Navigator.push(context, route);
+        }
+      }
     }
   }
 
   @override
-  void deactivate() {
-    controller.pauseCamera();
-    super.deactivate();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Future<bool> didPopRoute() {
+    controller.resumeCamera();
+    return super.didPopRoute();
   }
 
   @override
