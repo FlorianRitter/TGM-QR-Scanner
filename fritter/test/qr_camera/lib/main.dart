@@ -9,14 +9,15 @@ void main() => runApp(MyApp());
 class YTRoute extends StatefulWidget {
 
   final String link;
+  final QRViewController qrController;
 
-  YTRoute({Key key, @required this.link}) : super(key: key);
+  YTRoute({Key key, @required this.link, @required this.qrController}) : super(key: key);
 
   @override
   YTRouteState createState() => YTRouteState();
 }
 
-class YTRouteState extends State<YTRoute>{
+class YTRouteState extends State<YTRoute> with WidgetsBindingObserver {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey(debugLabel: "yt");
   YoutubePlayerController controller;
@@ -25,6 +26,7 @@ class YTRouteState extends State<YTRoute>{
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     controller = YoutubePlayerController(
       initialVideoId: widget.link,
       flags: YoutubePlayerFlags(
@@ -35,10 +37,16 @@ class YTRouteState extends State<YTRoute>{
         isLive: false,
         enableCaption: false,
         controlsVisibleAtStart: true,
-        hideThumbnail: true,
+        hideThumbnail: false,
         hideControls: false,
       )
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -107,11 +115,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void openYoutube(String l) {
     if(!isPlayerReady){
       if(YoutubePlayer.convertUrlToId(l) != null){
-        MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(l)));
+        MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(l), qrController: controller));
         if(!route.isCurrent) {
           controller.pauseCamera();
           isPlayerReady = true;
-          Navigator.push(context, route);
+          Navigator.of(context).push(route);
         }
       }
     }
@@ -130,9 +138,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   @override
-  Future<bool> didPopRoute() {
-    controller.resumeCamera();
-    return super.didPopRoute();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("################################################## " + state.index.toString());
+    if(state == AppLifecycleState.resumed) {
+      controller.resumeCamera();
+      isPlayerReady = false;
+    }
   }
 
   @override
@@ -143,14 +154,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           Expanded(
             flex: 5,
             child: QRView(
-                key: qrKey,
-                overlay: QrScannerOverlayShape(
-                  borderRadius: 0,
-                  borderColor: Colors.green,
-                  borderLength: 30,
-                  borderWidth: 5,
-                  cutOutSize: 300),
-                onQRViewCreated: _onQRViewCreate),
+              key: qrKey,
+              overlay: QrScannerOverlayShape(
+                borderRadius: 0,
+                borderColor: Colors.green,
+                borderLength: 30,
+                borderWidth: 5,
+                cutOutSize: 300),
+              onQRViewCreated: _onQRViewCreate
+            ),
           )
         ],
       ),
