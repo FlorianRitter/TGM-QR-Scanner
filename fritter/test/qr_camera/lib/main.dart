@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(QRScanner());
 
 class YTRoute extends StatefulWidget {
 
   final String link;
-  final QRViewController qrController;
 
-  YTRoute({Key key, @required this.link, @required this.qrController}) : super(key: key);
+  YTRoute({Key key, @required this.link}) : super(key: key);
 
   @override
   YTRouteState createState() => YTRouteState();
 }
 
-class YTRouteState extends State<YTRoute> with WidgetsBindingObserver {
+class YTRouteState extends State<YTRoute> {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey(debugLabel: "yt");
   YoutubePlayerController controller;
@@ -26,7 +26,6 @@ class YTRouteState extends State<YTRoute> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     controller = YoutubePlayerController(
       initialVideoId: widget.link,
       flags: YoutubePlayerFlags(
@@ -44,12 +43,6 @@ class YTRouteState extends State<YTRoute> with WidgetsBindingObserver {
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
@@ -57,6 +50,9 @@ class YTRouteState extends State<YTRoute> with WidgetsBindingObserver {
         children: <Widget>[
           Expanded (child:
             YoutubePlayer (
+              topActions: <Widget>[
+                BackButton()
+              ],
               controller: controller,
               showVideoProgressIndicator: true,
               aspectRatio: 16 / 9,
@@ -69,88 +65,61 @@ class YTRouteState extends State<YTRoute> with WidgetsBindingObserver {
   }
 }
 
-class MyApp extends StatelessWidget {
+class QRScanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp
+    ]);
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: QRCamera()
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+class QRCamera extends StatefulWidget {
+  QRCamera({Key key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  QRCameraState createState() => QRCameraState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+class QRCameraState extends State<QRCamera> {
   var qrText = "";
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String status = "Press the button to determine the permission-Status";
   bool isPlayerReady = false;
 
-  void askForPermission() async {
-    String message = "";
+  void checkPermission() async {
     if (await Permission.camera.request().isGranted) {
-      message = "Camera working!";
-      //TODO: Show camera
+      //do nothing probably
     } else {
-        Text txt1 = Text(
-             'Fehlende Kameraerlaubnis',
-             style: TextStyle(fontSize: 32, color: Color.fromRGBO(66, 66, 66, 0.8)),
-           );
-        Text txt2 = Text(
-             'Erlaube QR-Scanner auf deine Kamera zuzugreifen. Du kannst diese Berechtigung unter Eistellung ändern.',
-             style: TextStyle(fontSize: 12, color: Color.fromRGBO(117, 117, 117, 0.6)),
-           );
-        message = txt1.data + txt2.data;
-
+      //TODO: Show texts (tbd)
+      Text header = Text(
+        'Fehlende Kameraerlaubnis.',
+        style: TextStyle(fontSize: 32, color: Color.fromRGBO(66, 66, 66, 0.8)),
+          );
+      Text description = Text(
+        'Erlaube QR-Scanner auf deine Kamera zuzugreifen. Du kannst diese Berechtigung unter den Einstellung ändern.',
+        style: TextStyle(fontSize: 12, color: Color.fromRGBO(117, 117, 117, 0.6)),
+      );
     }
-    setState(() {
-      status = message;
-    });
   }
 
-  void openYoutube(String l) {
+  void openYoutube(String link) {
     if(!isPlayerReady){
-      if(YoutubePlayer.convertUrlToId(l) != null){
-        MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(l), qrController: controller));
+      if(YoutubePlayer.convertUrlToId(link) != null){
+        MaterialPageRoute route = MaterialPageRoute(builder: (context) => YTRoute(link: YoutubePlayer.convertUrlToId(link)));
         if(!route.isCurrent) {
           controller.pauseCamera();
           isPlayerReady = true;
-          Navigator.of(context).push(route);
+          final navigation = Navigator.of(context).push(route);
+          navigation.then((_) {
+            controller.resumeCamera();
+            isPlayerReady = false;
+          });
         }
       }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("################################################## " + state.index.toString());
-    if(state == AppLifecycleState.resumed) {
-      controller.resumeCamera();
-      isPlayerReady = false;
     }
   }
 
@@ -169,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 borderLength: 30,
                 borderWidth: 5,
                 cutOutSize: 300),
-              onQRViewCreated: _onQRViewCreate
+              onQRViewCreated: onQRViewCreate
             ),
           )
         ],
@@ -177,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  void _onQRViewCreate(QRViewController controller) {
+  void onQRViewCreate(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((onData) {
       qrText = onData;
