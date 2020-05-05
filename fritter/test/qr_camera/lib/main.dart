@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart' as yt;
@@ -30,24 +30,24 @@ class CameraPermissionState extends State<CameraPermission> {
 
   @override
   void initState() {
-    checkPermission();
+    // checkPermission();
     super.initState();
   }
 
-  void checkPermission() async {
-    MaterialPageRoute route;
-    if (!await Permission.camera.request().isGranted) {
-      route = MaterialPageRoute(builder: (context) => NoPermission());
-    } else
-      route = MaterialPageRoute(builder: (context) => QRCamera());
-    final navigation = Navigator.of(context).push(route);
-    navigation.then((_) {
-      if (Platform.isAndroid)
-        SystemNavigator.pop();
-      else
-        exit(0);
-    });
-  }
+  // void checkPermission() async {
+  //   MaterialPageRoute route;
+  //   if (!await Permission.camera.request().isGranted) {
+  //     route = MaterialPageRoute(builder: (context) => NoPermission());
+  //   } else
+  //     route = MaterialPageRoute(builder: (context) => QRCamera());
+  //   final navigation = Navigator.of(context).push(route);
+  //   navigation.then((_) {
+  //     if (Platform.isAndroid)
+  //       SystemNavigator.pop();
+  //     else
+  //       exit(0);
+  //   });
+  // }
 }
 
 class QRCamera extends StatefulWidget {
