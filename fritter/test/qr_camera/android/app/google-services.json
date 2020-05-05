@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "647699209702",
+    "firebase_url": "https://tgm-qr-scanner.firebaseio.com",
+    "project_id": "tgm-qr-scanner",
+    "storage_bucket": "tgm-qr-scanner.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647699209702:android:37f32079c35be7b0980a27",
+        "android_client_info": {
+          "package_name": "com.qr_scanner.tgm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "647699209702-l7qlm3kquf1igmme3pjnjq6osftrn4p1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8EyBk2WJ7RHAciAh62PTD66dvQCxULf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "647699209702-l7qlm3kquf1igmme3pjnjq6osftrn4p1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

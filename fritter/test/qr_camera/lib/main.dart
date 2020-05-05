@@ -6,8 +6,6 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart' as yt;
 
-//Kameraberechtigung selbstständig abfragen, bevor die QRCamera geöffnet wird --> einfachster weg
-
 void main() => runApp(QRScanner());
 
 class QRScanner extends StatelessWidget {
@@ -27,7 +25,6 @@ class CameraPermission extends StatefulWidget {
 }
 
 class CameraPermissionState extends State<CameraPermission> {
-  bool isPermissioned = true;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +40,6 @@ class CameraPermissionState extends State<CameraPermission> {
   void checkPermission() async {
     MaterialPageRoute route;
     if (!await Permission.camera.request().isGranted) {
-      isPermissioned = false;
       route = MaterialPageRoute(builder: (context) => NoPermission());
     }else
       route = MaterialPageRoute(builder: (context) => QRCamera());
@@ -69,9 +65,11 @@ class QRCameraState extends State<QRCamera> {
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   bool isPlayerReady = false;
+  MediaQueryData queryData;
 
   @override
   Widget build(BuildContext context) {
+    queryData = MediaQuery.of(context);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -94,6 +92,23 @@ class QRCameraState extends State<QRCamera> {
             onPressed: () => {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebView()))
             }
+          ),
+          Container(
+            color: Colors.red,
+            margin: EdgeInsets.only(
+                top: 0.8 * queryData.size.height,
+                left: 0.1 * queryData.size.width
+            ),
+            height: 60,
+            width: 0.8 * queryData.size.width,
+            padding: new EdgeInsets.only(top: 20, left: 10, right: 10),
+            child: Text(
+              "Scanne den QR-Code aus dem Katalog",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white
+              )
+            )
           )
         ]
       )
@@ -109,6 +124,7 @@ class QRCameraState extends State<QRCamera> {
           isPlayerReady = true;
           final navigation = Navigator.of(context).push(route);
           navigation.then((_) {
+            SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
             controller.resumeCamera();
             isPlayerReady = false;
           });
@@ -144,6 +160,7 @@ class PlayerState extends State<Player> {
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([]);
     super.initState();
     controller = yt.YoutubePlayerController(
       initialVideoId: widget.link,
@@ -226,7 +243,11 @@ class WebViewState extends State<WebView> {
     return Scaffold(
       body: Builder(
         builder: (BuildContext context) {
-          return yt.WebView(initialUrl: "https://www.allaboutapps.at/impressum/");
+          return yt.WebView(
+            initialUrl: "https://www.allaboutapps.at/impressum/",
+            javascriptMode: yt.JavascriptMode.unrestricted,
+            gestureNavigationEnabled: true
+          );
         }
       )
     );
