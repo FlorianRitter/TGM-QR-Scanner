@@ -9,7 +9,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="qr_camera"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launch">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
