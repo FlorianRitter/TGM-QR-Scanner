@@ -13,19 +13,16 @@ class QRScanner extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    return MaterialApp(
-      home: CameraPermission()
-    );
+    return MaterialApp(home: CameraPermission());
   }
 }
 
-class CameraPermission extends StatefulWidget {  
+class CameraPermission extends StatefulWidget {
   @override
-  CameraPermissionState createState() => CameraPermissionState(); 
+  CameraPermissionState createState() => CameraPermissionState();
 }
 
 class CameraPermissionState extends State<CameraPermission> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold();
@@ -41,15 +38,15 @@ class CameraPermissionState extends State<CameraPermission> {
     MaterialPageRoute route;
     if (!await Permission.camera.request().isGranted) {
       route = MaterialPageRoute(builder: (context) => NoPermission());
-    }else
+    } else
       route = MaterialPageRoute(builder: (context) => QRCamera());
     final navigation = Navigator.of(context).push(route);
     navigation.then((_) {
-      if(Platform.isAndroid)
+      if (Platform.isAndroid)
         SystemNavigator.pop();
       else
         exit(0);
-    }); 
+    });
   }
 }
 
@@ -71,60 +68,53 @@ class QRCameraState extends State<QRCamera> {
   Widget build(BuildContext context) {
     queryData = MediaQuery.of(context);
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          QRView(
-            key: qrKey,
-            overlay: QrScannerOverlayShape(
-              borderRadius: 0,
-              borderColor: Colors.green,
-              borderLength: 30,
-              borderWidth: 5,
-              cutOutSize: 300
-            ),
-            onQRViewCreated: onQRViewCreate,
-          ),
-          IconButton(
-            icon: new Icon(Icons.info),
-            iconSize: 35,
-            padding: const EdgeInsets.all(20),
-            color: Colors.white,
-            onPressed: () => {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebView()))
-            }
-          ),
-          Container(
-            color: Colors.red,
-            margin: EdgeInsets.only(
-                top: 0.8 * queryData.size.height,
-                left: 0.1 * queryData.size.width
-            ),
-            height: 60,
-            width: 0.8 * queryData.size.width,
-            padding: new EdgeInsets.only(top: 20, left: 10, right: 10),
-            child: Text(
-              "Scanne den QR-Code aus dem Katalog",
+        body: Stack(children: <Widget>[
+      QRView(
+        key: qrKey,
+        overlay: QrScannerOverlayShape(
+            borderRadius: 0,
+            borderColor: Colors.green,
+            borderLength: 30,
+            borderWidth: 5,
+            cutOutSize: 300),
+        onQRViewCreated: onQRViewCreate,
+      ),
+      IconButton(
+          icon: new Icon(Icons.info),
+          iconSize: 35,
+          padding: const EdgeInsets.all(20),
+          color: Colors.white,
+          onPressed: () => {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => WebView()))
+              }),
+      Container(
+          color: Colors.red,
+          margin: EdgeInsets.only(
+              top: 0.8 * queryData.size.height,
+              left: 0.1 * queryData.size.width),
+          height: 60,
+          width: 0.8 * queryData.size.width,
+          padding: new EdgeInsets.only(top: 20, left: 10, right: 10),
+          child: Text("Scanne den QR-Code aus dem Katalog",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white
-              )
-            )
-          )
-        ]
-      )
-    );
+              style: TextStyle(color: Colors.white)))
+    ]));
   }
 
   void openYoutube(String link) {
-    if(!isPlayerReady){
-      if(yt.YoutubePlayer.convertUrlToId(link) != null){
-        MaterialPageRoute route = MaterialPageRoute(builder: (context) => Player(link: yt.YoutubePlayer.convertUrlToId(link)));
-        if(!route.isCurrent) {
+    if (!isPlayerReady) {
+      if (yt.YoutubePlayer.convertUrlToId(link) != null) {
+        MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) =>
+                Player(link: yt.YoutubePlayer.convertUrlToId(link)));
+        if (!route.isCurrent) {
           controller.pauseCamera();
           isPlayerReady = true;
           final navigation = Navigator.of(context).push(route);
           navigation.then((_) {
-            SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+            SystemChrome.setPreferredOrientations(
+                [DeviceOrientation.portraitUp]);
             controller.resumeCamera();
             isPlayerReady = false;
           });
@@ -137,7 +127,7 @@ class QRCameraState extends State<QRCamera> {
     this.controller = controller;
     controller.scannedDataStream.listen((onData) {
       qrText = onData;
-      if(qrText != "") {
+      if (qrText != "") {
         openYoutube(qrText);
       }
     });
@@ -145,7 +135,6 @@ class QRCameraState extends State<QRCamera> {
 }
 
 class Player extends StatefulWidget {
-
   final String link;
 
   Player({Key key, @required this.link}) : super(key: key);
@@ -160,50 +149,44 @@ class PlayerState extends State<Player> {
 
   @override
   void initState() {
-    SystemChrome.setPreferredOrientations([]);
     super.initState();
     controller = yt.YoutubePlayerController(
-      initialVideoId: widget.link,
-      flags: yt.YoutubePlayerFlags(
-        mute: false,
-        autoPlay: true,
-        disableDragSeek: true,
-        loop: false,
-        isLive: false,
-        enableCaption: false,
-        controlsVisibleAtStart: true,
-        hideThumbnail: false,
-        hideControls: false,
-      )
-    );
+        initialVideoId: widget.link,
+        flags: yt.YoutubePlayerFlags(
+          mute: false,
+          autoPlay: true,
+          disableDragSeek: true,
+          loop: false,
+          isLive: false,
+          enableCaption: false,
+          controlsVisibleAtStart: true,
+          hideThumbnail: false,
+          hideControls: false,
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: ytKey,
-      body: Column(
-        children: <Widget>[
-          Expanded (child:
-            yt.YoutubePlayer (
-              topActions: <Widget>[
-                IconButton(
-                  icon: new Icon(Icons.arrow_back),
-                  iconSize: 35,
-                  padding: const EdgeInsets.all(20),
-                  color: Colors.white,
-                  onPressed: () => Navigator.of(context).pop(null),
-                ),
-              ],
-              controller: controller,
-              showVideoProgressIndicator: true,
-              aspectRatio: 16 / 9,
-              progressIndicatorColor: Colors.red,
-            )
-          )
-        ]
-      )
-    );
+        key: ytKey,
+        body: Column(children: <Widget>[
+          Expanded(
+              child: yt.YoutubePlayer(
+            topActions: <Widget>[
+              IconButton(
+                icon: new Icon(Icons.arrow_back),
+                iconSize: 35,
+                padding: const EdgeInsets.all(20),
+                color: Colors.white,
+                onPressed: () => Navigator.of(context).pop(null),
+              ),
+            ],
+            controller: controller,
+            showVideoProgressIndicator: true,
+            aspectRatio: 16 / 9,
+            progressIndicatorColor: Colors.red,
+          ))
+        ]));
   }
 }
 
@@ -211,45 +194,36 @@ class NoPermission extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Fehlende Kameraerlaubnis.',
-              style: TextStyle(fontSize: 32, color: Color.fromRGBO(66, 66, 66, 0.8))
-            ),
-            Text(
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+          Text('Fehlende Kameraerlaubnis.',
+              style: TextStyle(
+                  fontSize: 32, color: Color.fromRGBO(66, 66, 66, 0.8))),
+          Text(
               'Erlaube QR-Scanner auf deine Kamera zuzugreifen.\nDu kannst diese Berechtigung unter den Einstellung ändern.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Color.fromRGBO(117, 117, 117, 0.6))
-            )
-          ]
-        )
-      )
-    );
+              style: TextStyle(
+                  fontSize: 12, color: Color.fromRGBO(117, 117, 117, 0.6)))
+        ])));
   }
 }
 
 class WebView extends StatefulWidget {
-@override
-WebViewState createState() => WebViewState();
+  @override
+  WebViewState createState() => WebViewState();
 }
 
 class WebViewState extends State<WebView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Builder(
-        builder: (BuildContext context) {
-          return yt.WebView(
-            initialUrl: "https://www.allaboutapps.at/impressum/",
-            javascriptMode: yt.JavascriptMode.unrestricted,
-            gestureNavigationEnabled: true
-          );
-        }
-      )
-    );
+    return Scaffold(body: Builder(builder: (BuildContext context) {
+      return yt.WebView(
+          initialUrl: "https://www.allaboutapps.at/impressum/",
+          javascriptMode: yt.JavascriptMode.unrestricted,
+          gestureNavigationEnabled: true);
+    }));
   }
 }
