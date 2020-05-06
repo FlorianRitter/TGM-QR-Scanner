@@ -12,20 +12,40 @@ import 'package:firebase_analytics/observer.dart';
 void main() => runApp(QRScanner());
 
 class QRScanner extends StatelessWidget {
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    return MaterialApp(home: CameraPermission());
+    return MaterialApp(
+        navigatorObservers: <NavigatorObserver>[observer],
+        home: CameraPermission(
+          analytics: analytics,
+          observer: observer,
+        ));
   }
 }
 
 class CameraPermission extends StatefulWidget {
+  CameraPermission({Key key, this.analytics, this.observer}) : super(key: key);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
   @override
-  CameraPermissionState createState() => CameraPermissionState();
+  CameraPermissionState createState() =>
+      CameraPermissionState(analytics, observer);
 }
 
 class CameraPermissionState extends State<CameraPermission> {
+  CameraPermissionState(this.analytics, this.observer);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold();
@@ -33,9 +53,13 @@ class CameraPermissionState extends State<CameraPermission> {
 
   @override
   void initState() {
-    //Firebase appstart
+    logAppStart();
     checkPermission();
     super.initState();
+  }
+
+  void logAppStart() async {
+    await analytics.logEvent(name: "appStart");
   }
 
   void checkPermission() async {
@@ -43,7 +67,11 @@ class CameraPermissionState extends State<CameraPermission> {
     if (!await Permission.camera.request().isGranted) {
       route = MaterialPageRoute(builder: (context) => NoPermission());
     } else
-      route = MaterialPageRoute(builder: (context) => QRCamera());
+      route = MaterialPageRoute(
+          builder: (context) => QRCamera(
+                analytics: analytics,
+                observer: observer,
+              ));
     final navigation = Navigator.of(context).push(route);
     navigation.then((_) {
       if (Platform.isAndroid)
@@ -55,13 +83,21 @@ class CameraPermissionState extends State<CameraPermission> {
 }
 
 class QRCamera extends StatefulWidget {
-  QRCamera({Key key}) : super(key: key);
+  QRCamera({Key key, this.analytics, this.observer}) : super(key: key);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
 
   @override
-  QRCameraState createState() => QRCameraState();
+  QRCameraState createState() => QRCameraState(analytics, observer);
 }
 
 class QRCameraState extends State<QRCamera> {
+  QRCameraState(this.analytics, this.observer);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
   String qrText = "";
   String previousLink = "";
   QRViewController controller;
@@ -112,8 +148,8 @@ class QRCameraState extends State<QRCamera> {
     if (!isPlayerReady && previousLink != link) {
       if (yt.YoutubePlayer.convertUrlToId(link) != null) {
         l = "";
-        //Firebase success
-        //Firebase video
+        logSuccessfulScan();
+        logYoutubeScan(link);
         MaterialPageRoute route = MaterialPageRoute(
             builder: (context) =>
                 Player(link: yt.YoutubePlayer.convertUrlToId(link)));
@@ -129,11 +165,23 @@ class QRCameraState extends State<QRCamera> {
           });
         }
       } else {
-        //Firebase success
-        //Firebase faulty
+        logSuccessfulScan();
+        logFaultyScan();
       }
     }
     previousLink = l;
+  }
+
+  void logSuccessfulScan() async {
+    await analytics.logEvent(name: "successfulScan");
+  }
+
+  void logFaultyScan() async {
+    await analytics.logEvent(name: "faultyScan");
+  }
+
+  void logYoutubeScan(String link) async {
+    await analytics.logEvent(name: "youtubeScan", parameters: {"url": link});
   }
 
   void onQRViewCreate(QRViewController controller) {
