@@ -1,7 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart' as yt;
@@ -30,24 +31,25 @@ class CameraPermissionState extends State<CameraPermission> {
 
   @override
   void initState() {
-    // checkPermission();
+    //Firebase appstart
+    checkPermission();
     super.initState();
   }
 
-  // void checkPermission() async {
-  //   MaterialPageRoute route;
-  //   if (!await Permission.camera.request().isGranted) {
-  //     route = MaterialPageRoute(builder: (context) => NoPermission());
-  //   } else
-  //     route = MaterialPageRoute(builder: (context) => QRCamera());
-  //   final navigation = Navigator.of(context).push(route);
-  //   navigation.then((_) {
-  //     if (Platform.isAndroid)
-  //       SystemNavigator.pop();
-  //     else
-  //       exit(0);
-  //   });
-  // }
+  void checkPermission() async {
+    MaterialPageRoute route;
+    if (!await Permission.camera.request().isGranted) {
+      route = MaterialPageRoute(builder: (context) => NoPermission());
+    } else
+      route = MaterialPageRoute(builder: (context) => QRCamera());
+    final navigation = Navigator.of(context).push(route);
+    navigation.then((_) {
+      if (Platform.isAndroid)
+        SystemNavigator.pop();
+      else
+        exit(0);
+    });
+  }
 }
 
 class QRCamera extends StatefulWidget {
@@ -58,7 +60,8 @@ class QRCamera extends StatefulWidget {
 }
 
 class QRCameraState extends State<QRCamera> {
-  var qrText = "";
+  String qrText = "";
+  String previousLink = "";
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   bool isPlayerReady = false;
@@ -103,8 +106,12 @@ class QRCameraState extends State<QRCamera> {
   }
 
   void openYoutube(String link) {
-    if (!isPlayerReady) {
+    String l = link;
+    if (!isPlayerReady && previousLink != link) {
       if (yt.YoutubePlayer.convertUrlToId(link) != null) {
+        l = "";
+        //Firebase success
+        //Firebase video
         MaterialPageRoute route = MaterialPageRoute(
             builder: (context) =>
                 Player(link: yt.YoutubePlayer.convertUrlToId(link)));
@@ -119,8 +126,12 @@ class QRCameraState extends State<QRCamera> {
             isPlayerReady = false;
           });
         }
+      } else {
+        //Firebase success
+        //Firebase faulty
       }
     }
+    previousLink = l;
   }
 
   void onQRViewCreate(QRViewController controller) {
