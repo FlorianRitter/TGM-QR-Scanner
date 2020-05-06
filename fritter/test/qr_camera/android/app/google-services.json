@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "219790437786",
+    "firebase_url": "https://tgm-qr.firebaseio.com",
+    "project_id": "tgm-qr",
+    "storage_bucket": "tgm-qr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219790437786:android:da8a0556dd8c8e3dd0de23",
+        "android_client_info": {
+          "package_name": "com.qr_android.tgm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219790437786-se78s3jk9hjmma4l7ne9b0kuodh45gmo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.qr_android.tgm",
+            "certificate_hash": "d19c93a8f0abb169f2af9d86de5cbc0d8aa3ba05"
+          }
+        },
+        {
+          "client_id": "219790437786-jqgg42c5lf8siu80e3nl22dtog48euh0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrqJHfbRgpBY1o41GSjB_tI4D9NKT8BxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219790437786-jqgg42c5lf8siu80e3nl22dtog48euh0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
