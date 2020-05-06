@@ -53,7 +53,6 @@ class CameraPermissionState extends State<CameraPermission> {
 
   @override
   void initState() {
-    logAppStart();
     checkPermission();
     super.initState();
   }
@@ -63,6 +62,7 @@ class CameraPermissionState extends State<CameraPermission> {
   }
 
   void checkPermission() async {
+    logAppStart();
     MaterialPageRoute route;
     if (!await Permission.camera.request().isGranted) {
       route = MaterialPageRoute(builder: (context) => NoPermission());
