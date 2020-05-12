@@ -151,8 +151,9 @@ class QRCameraState extends State<QRCamera> {
         logSuccessfulScan();
         logYoutubeScan(link);
         MaterialPageRoute route = MaterialPageRoute(
-            builder: (context) =>
-                Player(link: yt.YoutubePlayer.convertUrlToId(link)));
+          builder: (context) =>
+              Player(link: yt.YoutubePlayer.convertUrlToId(link)),
+        );
         if (!route.isCurrent) {
           controller.pauseCamera();
           isPlayerReady = true;
@@ -211,6 +212,11 @@ class PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
+    ]);
     controller = yt.YoutubePlayerController(
         initialVideoId: widget.link,
         flags: yt.YoutubePlayerFlags(
