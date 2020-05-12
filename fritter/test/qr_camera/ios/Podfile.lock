@@ -6,6 +6,10 @@ PODS:
     - FirebaseAnalytics (= 6.4.2)
   - Firebase/CoreOnly (6.23.0):
     - FirebaseCore (= 6.6.7)
+  - firebase_analytics (0.0.1):
+    - Firebase/Analytics (~> 6.0)
+    - Firebase/Core
+    - Flutter
   - FirebaseAnalytics (6.4.2):
     - FirebaseCore (~> 6.6)
     - FirebaseInstallations (~> 1.2)
@@ -79,6 +83,7 @@ PODS:
 
 DEPENDENCIES:
   - Firebase/Analytics
+  - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - Flutter (from `Flutter`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
@@ -101,6 +106,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  firebase_analytics:
+    :path: ".symlinks/plugins/firebase_analytics/ios"
   Flutter:
     :path: Flutter
   permission_handler:
@@ -112,6 +119,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Firebase: 585ae467b3edda6a5444e788fda6888f024d8d6f
+  firebase_analytics: dacdcfc524d722fff13dcff942f0dfa47e6be567
   FirebaseAnalytics: 558f7a03d19de451093032c806f39d5f9dff096e
   FirebaseCore: a2788a0d5f6c1dff17b8f79b4a73654a8d4bfdbd
   FirebaseCoreDiagnostics: b59c024493a409f8aecba02c99928d0d8431d159
@@ -129,6 +137,6 @@ SPEC CHECKSUMS:
   qr_code_scanner: 16107718bdad7d708cdf6a5eacdca24b56cdf471
   webview_media: 33604c2c1805f41bd0c6749c4d7de24b8cb4d81d
 
-PODFILE CHECKSUM: 23c30ff67b3c4ffce029b63b1a507ab3eb29a558
+PODFILE CHECKSUM: d02be7bb7df81963eb0cd9d620dbb55bb333fce4
 
 COCOAPODS: 1.8.4
